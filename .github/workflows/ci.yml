@@ -20,10 +20,10 @@ jobs:
       name: Checkout Code
      
     - name: Setup MSBuild Path
-      uses: microsoft/setup-msbuild@v1.0.3
+      uses: microsoft/setup-msbuild@v1.0.2
        
     - name: Setup NuGet
-      uses: NuGet/setup-nuget@v1.0.2
+      uses: NuGet/setup-nuget@v1.0.3
      
     - name: Restore NuGet Packages
       run: nuget restore UnofficialCrusaderPatch.sln
