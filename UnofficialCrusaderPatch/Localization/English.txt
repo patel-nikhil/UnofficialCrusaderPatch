@@ -59,6 +59,7 @@ o_fix_moat_digging_unit_disappearing
 o_fix_moat_digging_unit_disappearing_descr
 {
 "Fixes the bug where moat diggers would disappear randomly while digging. Note that they can still disappear if you order them to move while digging and they happen to stand on an unwalkable tile!"
+}
 
 o_fix_small_wall_placement_count
 {
@@ -68,6 +69,7 @@ o_fix_small_wall_placement_count
 o_fix_small_wall_placement_count_descr
 {
 "Fixes the bug where the small wall placement preview only allowed the player to use half of their stone."
+}
 
 o_fix_ladderclimb
 {
@@ -77,6 +79,7 @@ o_fix_ladderclimb
 o_fix_ladderclimb_descr
 {
 "Units no longer forget their destination after climbing, and they will no longer start climbing back down or up immediately afterwards they just climbed."
+}
 
 u_assassinfix
 {
@@ -87,6 +90,7 @@ u_assassinfix_descr
 {
 "- Assassins will no longer stop and forget their destination in the middle of the map after encountering an enemy on the way
 - Assassins will no longer attack units on atop the keep after descending the wall into a 1 tile gap path between the wall and the keep"
+}
 
 u_fix_lord_animation_stuck_movement
 {
