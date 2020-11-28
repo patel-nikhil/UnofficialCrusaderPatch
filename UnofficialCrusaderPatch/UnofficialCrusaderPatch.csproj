@@ -159,6 +159,8 @@
     <EmbeddedResource Include="CodeBlocks\o_fix_fletcher_bug.block" />
     <EmbeddedResource Include="CodeBlocks\o_fix_baker_disappear.block" />
     <EmbeddedResource Include="CodeBlocks\o_fix_moat_digging_unit_disappearing.block" />
+    <EmbeddedResource Include="CodeBlocks\o_fix_small_wall_placement_count.block" />
+    <EmbeddedResource Include="CodeBlocks\o_fix_small_wall_placement_count_pre.block" />
     <EmbeddedResource Include="CodeBlocks\o_override_identity_menu.block" />
     <EmbeddedResource Include="CodeBlocks\o_default_multiplayer_speed.block" />
     <EmbeddedResource Include="CodeBlocks\o_playercolor_ai_allied_menu_ally_name.block" />
