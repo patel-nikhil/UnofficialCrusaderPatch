@@ -188,6 +188,8 @@
     <EmbeddedResource Include="CodeBlocks\u_fireballistatunneler.block" />
     <EmbeddedResource Include="CodeBlocks\u_spearmen_run.block" />
     <EmbeddedResource Include="CodeBlocks\u_tanner_fix.block" />
+    <EmbeddedResource Include="CodeBlocks\u_fix_lord_animation_stuck_building_attack.block" />
+    <EmbeddedResource Include="CodeBlocks\u_fix_lord_animation_stuck_movement.block" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

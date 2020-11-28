@@ -87,6 +87,15 @@ u_assassinfix_descr
 {
 "- Assassins will no longer stop and forget their destination in the middle of the map after encountering an enemy on the way
 - Assassins will no longer attack units on atop the keep after descending the wall into a 1 tile gap path between the wall and the keep"
+
+u_fix_lord_animation_stuck_movement
+{
+"Fix Lord animation freeze"
+}
+
+u_fix_lord_animation_stuck_movement_descr
+{
+"Fixes Lord animation freezes after the Lord stops moving and after the Lord destroys a building."
 }
 
 // ======================
