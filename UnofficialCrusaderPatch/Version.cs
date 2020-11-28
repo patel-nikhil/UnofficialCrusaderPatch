@@ -589,6 +589,9 @@ namespace UCP
                             0x66, 0x89, 0x86, 0xBC, 0x8, 0x00, 0x00 // mov [esi+8BC],ax
                         }
                     },
+                }
+            },
+
             new Change("u_fix_lord_animation_stuck_movement", ChangeType.Bugfix, true)
             {
                 new DefaultHeader("u_fix_lord_animation_stuck_movement")
