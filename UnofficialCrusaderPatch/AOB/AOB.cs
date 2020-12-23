@@ -9,10 +9,7 @@ namespace UCP
 {
     public class AOB
     {
-        ByteOrWildCard[] elements;
-        public ByteOrWildCard[]  Elements {
-            get => elements;
-        }
+        public ByteOrWildCard[] Elements { get; }
 
         public AOB(string codeBlockName)
         {
@@ -37,7 +34,7 @@ namespace UCP
             {
                 throw new Exception();
             }
-            elements = new ByteOrWildCard[codeBlockContent.Length / 3 + 1];
+            Elements = new ByteOrWildCard[codeBlockContent.Length / 3 + 1];
 
             var index = 0;
             for (var i = 0; i <= codeBlockContent.Length - 2; i+=3, index++)
@@ -59,7 +56,7 @@ namespace UCP
                         throw new Exception("Invalid codeblock " + codeBlockName);
                     }
                 }
-                elements[index] = elem;
+                Elements[index] = elem;
             }
         }
 
@@ -220,18 +217,12 @@ namespace UCP
                         searchPattern = pattern.Skip(wildCardIndexes[0] + 1).ToArray();
                         precedingPattern = pattern.Take(wildCardIndexes[0] + 1).ToArray();
                         followingPattern = null;
-                        // searchPattern = pattern[wildCardIndexes[0]:end]
-                        // searchStartIndex = wildcardIndex[0]
-                        // searchStopIndex = length
                     }
                     else
                     {
                         searchPattern = pattern.Take(wildCardIndexes[0] - 1).ToArray();
                         followingPattern = pattern.Skip(wildCardIndexes[0] - 1).ToArray();
                         precedingPattern = null;
-                        // searchPattern = pattern[0:wildCardIndexes[0]]
-                        // searchStartIndex = 0
-                        // searchStopIndex = wildcardIndex[0]
                     }
                 }
                 else
@@ -291,25 +282,6 @@ namespace UCP
                 precedingPattern = null;
                 followingPattern = null;
             }
-
-            /* if (precedingPattern != null)
-            {
-                Console.WriteLine("Preceding");
-                foreach (var elem in precedingPattern) Console.WriteLine(elem.IntValue);
-            }
-
-            if (searchPattern != null)
-            {
-                Console.WriteLine("Search");
-                foreach (var elem in searchPattern) Console.WriteLine(elem.IntValue);
-            }
-
-            if (followingPattern != null)
-            {
-                Console.WriteLine("Following");
-                foreach (var elem in followingPattern) Console.WriteLine(elem.IntValue);
-            }*/
-
 
             /* Build DFA */
             int M = searchPattern.Length;
