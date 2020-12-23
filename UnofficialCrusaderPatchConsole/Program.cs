@@ -9,13 +9,37 @@ namespace UCP
     {
         static void Main(string[] args)
         {
-            Configuration.Load();
+            AOB aob = new AOB("ai_access");
+            KMP kmp = new KMP(new ByteOrWildCard[]{
+                /*0x75,*/ new ByteOrWildCard(0x12), new ByteOrWildCard(WildCard.Instance), new ByteOrWildCard(WildCard.Instance), new ByteOrWildCard(0x66), new ByteOrWildCard(0x66), new ByteOrWildCard(0x66)/*,new ByteOrWildCard(WildCard.Instance),new ByteOrWildCard(0x66), new ByteOrWildCard(WildCard.Instance), new ByteOrWildCard(0x66), new ByteOrWildCard(WildCard.Instance)*//*0x06, 0x03, 0x00, 0xEB, 0x12, 0x83, 0xF8, 0x02, 0x75, 0x07, 0x66, 0xC7, 0x06, 0x03, 
+                0x00, 0xEB, 0x06, 0x66, 0x83, 0x3E, 0x03, 0x75, 0x14, 0x0F, 0xBF, 0x56, 0x20, 0x0F */
+            });
+            //  06 03 00 EB 12 83 F8 02 75 07 66 C7 06 03 00 EB 06 66 83 3E 03 75 14 0F BF 56 20 0F
+
+            /*int match = kmp.search(new byte[]{
+                0x10, 0x66, 0x66, 0x66
+            });
+            Console.WriteLine(match)*/;
+
+            int match_address = kmp.findFirstInstance(new byte[]{
+                0x12, 0x10, 0x10, 0x66, 0x66, 0x66
+            });
+            /*int match = kmp.search(new byte[]{
+                0x10, 0x00, 0x07, 0x00, 0x66, 0xC7
+            });*/
+            /*int match_address = kmp.findFirstInstance(new byte[]{
+                0x10, 0x00, 0x07, 0x00, 0x66, 0xC7
+            });*/
+
+            
+            Console.WriteLine(match_address);
+            /*Configuration.Load();
             StartTroopChange.Load();
             ResourceChange.Load();
             Version.AddExternalChanges();
             ResolvePath();
             ResolveArgs(args);
-            SilentInstall();
+            SilentInstall();*/
         }
 
         static void ResolveArgs(String[] args)
