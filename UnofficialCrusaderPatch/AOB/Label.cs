@@ -49,6 +49,7 @@ namespace UCP
         {
             this.Identifier = identifier;
             CrusaderLabels.Add(Identifier, this);
+            ExtremeLabels.Add(Identifier, this);
         }
     }
 

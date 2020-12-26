@@ -54,27 +54,7 @@ namespace UCP
                         AOB aob = AOB.AOBList[codeReplacement.CodeBlockName];
                         aob.SetAddress(data);
 
-                        int startPosition = aob.Address.Value;
                         int currentPosition = aob.Address.Value;
-
-                        // Initialize labels declared inside change
-                        foreach (var element in change.GetByteValue())
-                        {
-                            if (!element.IsLabel && !element.IsReference)
-                            {
-                                currentPosition++;
-                            }
-                            else if (element.value is InlineLabel) // A label is a non-code marker so do not increment current position
-                            {
-                                (element.value as InlineLabel).Address = currentPosition;
-                            }
-                            else if (element.value is Reference)
-                            {
-                                currentPosition = InitializeReferenceAndGetNextPosition(element.value, labelDictionary, data, currentPosition);
-                            }
-                        }
-
-                        currentPosition = startPosition;
 
                         // Choose action based on current element
                         foreach (var element in change.GetByteValue())
@@ -85,11 +65,24 @@ namespace UCP
                             }
                             else
                             {
-                                WriteData(element, data);
+                                currentPosition += WriteData(element, labelDictionary, data, currentPosition);
                             }
                         }
                     }
                 }
+            }
+        }
+
+        // Assign address to each label defined by an offset within current codeblock
+        private static void InitializeFixedLabelAddresses(List<Label> labels, byte[] data)
+        {
+            foreach (var label in labels)
+            {
+                string codeBlock = label.CodeBlockName;
+                AOB aob = AOB.AOBList[codeBlock];
+                aob.SetAddress(data);
+                Console.WriteLine(aob.Address.Value);
+                label.SetAddress(aob.Address.Value);
             }
         }
 
@@ -155,30 +148,18 @@ namespace UCP
             }
         }
 
-        // Assign address to each label defined by an offset within current codeblock
-        private static void InitializeFixedLabelAddresses(List<Label> labels, byte[] data)
-        {
-            foreach (var label in labels)
-            {
-                string codeBlock = label.CodeBlockName;
-                AOB aob = AOB.AOBList[codeBlock];
-                aob.SetAddress(data);
-                Console.WriteLine(aob.Address.Value);
-                label.SetAddress(aob.Address.Value);
-            }
-        }
 
         private static int InitializeReferenceAndGetNextPosition(Reference referenceElement, Dictionary<string, Label> labelDictionary, byte[] data, int currentPosition)
         {
             if (referenceElement is FixedReference) // A fixed reference is a 32-bit address so add 4 to current position
             {
-                (referenceElement as FixedReference).Value = GetTargetAddress(referenceElement, labelDictionary, data);
+                (referenceElement as FixedReference).Value = GetTargetAddress(referenceElement, labelDictionary, data, currentPosition);
                 return currentPosition +4;
             }
             else if (referenceElement is RelativeReference) // A relative reference can be a 8-bit or 32-bit address so determine and increment appropriately
             {
-                int offset = currentPosition - GetTargetAddress(referenceElement, labelDictionary, data);
-                (referenceElement as FixedReference).Value = offset;
+                int offset = currentPosition - GetTargetAddress(referenceElement, labelDictionary, data, currentPosition);
+                (referenceElement as RelativeReference).Value = offset;
                 return currentPosition + 4;
             }
             else
@@ -187,48 +168,64 @@ namespace UCP
             }
         }
 
-        private static int GetTargetAddress(Reference reference, Dictionary<string, Label> labelDictionary, byte[] data)
+        private static int GetTargetAddress(Reference reference, Dictionary<string, Label> labelDictionary, byte[] data, int currentPosition)
         {
             string targetLabelName = reference.TargetLabelName;
             Label targetLabel = labelDictionary[targetLabelName];
 
-            string codeBlock = targetLabel.CodeBlockName;
-            AOB aob = AOB.AOBList[codeBlock];
-            aob.SetAddress(data);
-            targetLabel.SetAddress(aob.Address.Value);
-            return targetLabel.Address;
+            if (targetLabel is InlineLabel)
+            {
+                return targetLabel.Address;
+            }
+            else
+            {
+                string codeBlock = targetLabel.CodeBlockName;
+                AOB aob = AOB.AOBList[codeBlock];
+                aob.SetAddress(data);
+                targetLabel.SetAddress(aob.Address.Value);
+                Console.WriteLine(aob.Address.Value);
+                return targetLabel.Address;
+            }
         }
 
-        private static void WriteData(NumberOrAddress element, byte[] data)
+        private static int WriteData(NumberOrAddress element, Dictionary<string, Label> labelDictionary, byte[] data, int currentPosition)
         {
             if (element.value is FixedReference) // Write 32-bit value
             {
-                var value = (element.value as FixedReference).Value;
-                WriteValue(value, data);
+                /*var value = (element.value as FixedReference).Value;*/
+                var value = GetTargetAddress(element.value, labelDictionary, data, currentPosition);
+                FixedReference fixedReference = element.value as FixedReference;
+                int offset = value - fixedReference.BaseAddress;
+                WriteValue(offset, data);
+                return 4;
             }
             else if (element.value is RelativeReference) // Write 8-bit or 32-bit value as appropriate
             {
-                var value = (element.value as RelativeReference).Value;
-                WriteRelativeAddress(value, data);
+                var value = GetTargetAddress(element.value, labelDictionary, data, currentPosition);
+                RelativeReference relativeReference = element.value as RelativeReference;
+                int offset = value - relativeReference.BaseAddress;
+                WriteValue(offset, data);
+                return 4;
             }
             else
             {
                 byte value = (byte)element.value; // Write single byte
                 WriteSingleByte(value, data);
+                return 1;
             }
         }
 
         private static void WriteSingleByte(byte value, byte[] data)
         {
-
+            /*Console.WriteLine(value);*/
         }
 
         private static void WriteValue(int value, byte[] data)
         {
-
+            /*Console.WriteLine(value);*/
         }
 
-        private static void WriteRelativeAddress(int value, byte[] data)
+/*        private static void WriteRelativeAddress(int value, byte[] data)
         {
             if (value < 0x7F && value > 0x80)
             {
@@ -238,6 +235,6 @@ namespace UCP
             {
                 WriteValue(value, data);
             }
-        }
+        }*/
     }
 }

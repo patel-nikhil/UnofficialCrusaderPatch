@@ -11,11 +11,11 @@ namespace UCP
         ValueRetriever GetByteValue();
     }
 
-    internal abstract class Change {
+    internal abstract class AbstractChange {
         public string _codeBlockName;
     }
 
-    internal class CodeReplacement : Change, IChange
+    internal class CodeReplacement : AbstractChange, IChange
     {
         protected int[] Parameters { get; }
         public string CodeBlockName { get => _codeBlockName; }
@@ -68,7 +68,6 @@ namespace UCP
         }
     }
 
-
     class ValueRetriever : IEnumerable<NumberOrAddress>
     {
         public List<NumberOrAddress> Elements = new List<NumberOrAddress>();
@@ -76,15 +75,26 @@ namespace UCP
         public ValueRetriever(params object[] values)
         {
             foreach (var elem in values) { 
-                if (elem is byte || elem is int)
+                if (elem is byte)
                 {
                     this.Add((byte)elem);
+                }
+                else if (elem is int)
+                {
+                    this.Add((int)elem);
+                }
+                else if (elem is Reference)
+                {
+                    this.Add(new NumberOrAddress((Reference)elem));
+                }
+                else if (elem is InlineLabel)
+                {
+                    this.Add(new NumberOrAddress((InlineLabel)elem));
                 }
                 else if (elem is NumberOrAddress)
                 {
                     this.Add((NumberOrAddress)elem);
                 }
-                
             };
         }
 
