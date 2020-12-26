@@ -81,7 +81,6 @@ namespace UCP
                 string codeBlock = label.CodeBlockName;
                 AOB aob = AOB.AOBList[codeBlock];
                 aob.SetAddress(data);
-                Console.WriteLine(aob.Address.Value);
                 label.SetAddress(aob.Address.Value);
             }
         }
@@ -183,7 +182,6 @@ namespace UCP
                 AOB aob = AOB.AOBList[codeBlock];
                 aob.SetAddress(data);
                 targetLabel.SetAddress(aob.Address.Value);
-                Console.WriteLine(aob.Address.Value);
                 return targetLabel.Address;
             }
         }
@@ -192,26 +190,34 @@ namespace UCP
         {
             if (element.value is FixedReference) // Write 32-bit value
             {
-                /*var value = (element.value as FixedReference).Value;*/
                 var value = GetTargetAddress(element.value, labelDictionary, data, currentPosition);
-                FixedReference fixedReference = element.value as FixedReference;
-                int offset = value - fixedReference.BaseAddress;
-                WriteValue(offset, data);
+                WriteValue(value, data);
                 return 4;
             }
-            else if (element.value is RelativeReference) // Write 8-bit or 32-bit value as appropriate
+            else if (element.value is RelativeReference) // Write 32-bit value. Potential 8-bit instruction is ignored to reduce complexity
             {
                 var value = GetTargetAddress(element.value, labelDictionary, data, currentPosition);
                 RelativeReference relativeReference = element.value as RelativeReference;
-                int offset = value - relativeReference.BaseAddress;
+                int offset = value - relativeReference.BaseAddress - 4;
                 WriteValue(offset, data);
+                Console.WriteLine(offset);
                 return 4;
             }
-            else
+            else if (element.value is byte)
             {
                 byte value = (byte)element.value; // Write single byte
                 WriteSingleByte(value, data);
                 return 1;
+            }
+            else if (element.value is int)
+            {
+                int value = (int)element.value; // Write 32-bit integer
+                WriteValue(value, data);
+                return 4;
+            }
+            else
+            {
+                throw new Exception();
             }
         }
 

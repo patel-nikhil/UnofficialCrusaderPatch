@@ -16,9 +16,11 @@ namespace UCP
         {
             Label.CrusaderLabels.Add("label1", new Label("label1", "ai_fix_crusader_archers_pitch_attr", 0));
             Label.CrusaderLabels.Add("ai_fix_crusader_archers_pitch_attr", new Label("ai_fix_crusader_archers_pitch_attr", "ai_fix_crusader_archers_pitch_attr", 0));
+            Label.CrusaderLabels.Add("label3", new Label("label3", "ai_fix_crusader_archers_pitch_attr", 1));
 
             Label.ExtremeLabels.Add("label1", new Label("label1", "ai_fix_crusader_archers_pitch_attr", 0));
             Label.ExtremeLabels.Add("ai_fix_crusader_archers_pitch_attr", new Label("ai_fix_crusader_archers_pitch_attr", "ai_fix_crusader_archers_pitch_attr", 0));
+            Label.ExtremeLabels.Add("label3", new Label("label3", "ai_fix_crusader_archers_pitch_attr", 1));
 
             /*Label.CrusaderLabels.Add("mylabel", new Label("ai_fix_crusader_archers_pitch_attr", 0));*/
             Changes.Add(new ExtremeBar("ai_fix_crusader_archers_pitch_attr", new int[] { 0, 0 }));
@@ -35,7 +37,8 @@ namespace UCP
 
         public ExtremeBar(string codeBlockName, int[] parameters) : base(codeBlockName, parameters)
         {
-            this.Value = new ValueRetriever((byte)10, Parameters[0], new FixedReference("ai_fix_crusader_archers_pitch_attr"), /*new RelativeReference("ai_fix_crusader_archers_pitch_attr"),*/ new InlineLabel("label2"));
+            /*this.Value = new ValueRetriever((byte)10, Parameters[0], new FixedReference("ai_fix_crusader_archers_pitch_attr"), new RelativeReference("label3"), new InlineLabel("label2"));*/
+            this.Value = new ValueRetriever((byte)10, Parameters[0], new FixedReference("ai_fix_crusader_archers_pitch_attr"), new RelativeReference("label3"), new InlineLabel("label2"));
         }
 
         public override ValueRetriever GetByteValue()
