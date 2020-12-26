@@ -85,6 +85,10 @@
     <Compile Include="AIC\Utils\RWAttributes.cs" />
     <Compile Include="AIV\AIVView.cs" />
     <Compile Include="AOB\AOB.cs" />
+    <Compile Include="AOB\Edit.cs" />
+    <Compile Include="AOB\Installer.cs" />
+    <Compile Include="AOB\Label.cs" />
+    <Compile Include="AOB\Mod.cs" />
     <Compile Include="Configuration.cs" />
     <Compile Include="Debug.cs" />
     <Compile Include="Extensions.cs" />

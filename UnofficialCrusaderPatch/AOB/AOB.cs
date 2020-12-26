@@ -9,10 +9,15 @@ namespace UCP
 {
     public class AOB
     {
+        public static Dictionary<string, AOB> AOBList = new Dictionary<string, AOB>();
+
         public ByteOrWildCard[] Elements { get; }
+        public int? Address { get; set; }
 
         public AOB(string codeBlockName)
         {
+            AOBList.Add(codeBlockName, this);
+            this.Address = null;
             Assembly asm = Assembly.GetExecutingAssembly();
 
             // check if code block file is there
@@ -57,6 +62,19 @@ namespace UCP
                     }
                 }
                 Elements[index] = elem;
+            }
+        }
+
+        internal void SetAddress(byte[] data)
+        {
+            if (this.Address == null)
+            {
+                KMP kmp = new KMP(this.Elements);
+                this.Address = kmp.findFirstInstance(data); // SHC data byte array
+            }
+            if (this.Address == -1)
+            {
+                throw new Exception();
             }
         }
 
