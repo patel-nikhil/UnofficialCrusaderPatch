@@ -40,8 +40,7 @@ namespace UCP
                 0x10, 0x00, 0x07, 0x00, 0x66, 0xC7
             });*/
 
-            Installer.Initialize();
-            Installer.Install();
+            Installer.Install(true);
             /*Console.WriteLine(match_address);*/
             /*Configuration.Load();
             StartTroopChange.Load();

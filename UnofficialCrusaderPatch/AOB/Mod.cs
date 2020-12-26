@@ -14,9 +14,9 @@ namespace UCP
 
         public Mod()
         {
-            Labels.Add(new Label("ai_fix_crusader_archers_pitch_attr", 0));
+            Labels.Add(new Label("label1", "ai_fix_crusader_archers_pitch_attr", 0));
             /*Label.CrusaderLabels.Add("mylabel", new Label("ai_fix_crusader_archers_pitch_attr", 0));*/
-            Changes.Add(new ExtremeBar("ai_fix_crusader_archers_pitch_attr"));
+            Changes.Add(new ExtremeBar("ai_fix_crusader_archers_pitch_attr", new int[] { 0, 0 }));
 /*            Changes.Add(new CodeReplacement("ai_fix_crusader_archers_pitch_attr"));
             Changes.Add(new CodeAllocation("ai_fix_crusader_archers_pitch_attr"));
             Changes.Add(new MemoryAllocation("ai_fix_crusader_archers_pitch_attr"));*/
@@ -26,14 +26,14 @@ namespace UCP
 
     class ExtremeBar: CodeReplacement
     {
-        public ExtremeBar(string codeBlockName) : base(codeBlockName)
+        public ExtremeBar(string codeBlockName, int[] parameters) : base(codeBlockName, parameters)
         {
 
         }
 
         public override ValueRetriever GetByteValue()
         {
-            return new ValueRetriever(10, new FixedReference("ai_fix_crusader_archers_pitch_attr"), new RelativeReference("ai_fix_crusader_archers_pitch_attr"), new InlineLabel("ai_fix_crusader_archers_pitch_attr"));
+            return new ValueRetriever(10, Parameters[0],  new FixedReference("ai_fix_crusader_archers_pitch_attr"), new RelativeReference("ai_fix_crusader_archers_pitch_attr"), new InlineLabel("label2"));
         }
     }
 }

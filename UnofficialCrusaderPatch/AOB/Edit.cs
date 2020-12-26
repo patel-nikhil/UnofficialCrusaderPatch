@@ -17,7 +17,7 @@ namespace UCP
 
     internal class CodeReplacement : Change, IChange
     {
-        private int[] Parameters { get; }
+        protected int[] Parameters { get; }
         public string CodeBlockName { get => _codeBlockName; }
         public CodeReplacement(string codeBlockName, int[] parameters)
         {
@@ -64,25 +64,25 @@ namespace UCP
 
         public ValueRetriever GetByteValue()
         {
-            return new ValueRetriever(0x00, 0x90, (byte)Parameters[0], new ByteOrAddress(0x5));
+            return new ValueRetriever(0x00, 0x90, (byte)Parameters[0], new NumberOrAddress(0x5));
         }
     }
 
 
-    class ValueRetriever : IEnumerable<ByteOrAddress>
+    class ValueRetriever : IEnumerable<NumberOrAddress>
     {
-        public List<ByteOrAddress> Elements = new List<ByteOrAddress>();
+        public List<NumberOrAddress> Elements = new List<NumberOrAddress>();
 
         public ValueRetriever(params object[] values)
         {
             foreach (var elem in values) { 
-                if (elem is byte)
+                if (elem is byte || elem is int)
                 {
                     this.Add((byte)elem);
                 }
-                else if (elem is ByteOrAddress)
+                else if (elem is NumberOrAddress)
                 {
-                    this.Add((ByteOrAddress)elem);
+                    this.Add((NumberOrAddress)elem);
                 }
                 
             };
@@ -90,17 +90,22 @@ namespace UCP
 
         public void Add(byte value)
         {
-            this.Elements.Add(new ByteOrAddress(value));
+            this.Elements.Add(new NumberOrAddress(value));
         }
 
-        public void Add(ByteOrAddress value)
+        public void Add(int value)
+        {
+            this.Elements.Add(new NumberOrAddress(value));
+        }
+
+        public void Add(NumberOrAddress value)
         {
             this.Elements.Add(value);
         }
 
-        public IEnumerator<ByteOrAddress> GetEnumerator()
+        public IEnumerator<NumberOrAddress> GetEnumerator()
         {
-            return ((IEnumerable<ByteOrAddress>)Elements).GetEnumerator();
+            return ((IEnumerable<NumberOrAddress>)Elements).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -109,21 +114,26 @@ namespace UCP
         }
     }
 
-    public class ByteOrAddress
+    public class NumberOrAddress
     {
         public dynamic value { get; }
 
-        public ByteOrAddress(byte element)
+        public NumberOrAddress(byte element)
         {
             this.value = element;
         }
 
-        public ByteOrAddress(InlineLabel element)
+        public NumberOrAddress(int element)
         {
             this.value = element;
         }
 
-        public ByteOrAddress(Reference element)
+        public NumberOrAddress(InlineLabel element)
+        {
+            this.value = element;
+        }
+
+        public NumberOrAddress(Reference element)
         {
             this.value = element;
         }

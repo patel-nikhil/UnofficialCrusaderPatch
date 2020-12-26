@@ -15,13 +15,20 @@ namespace UCP
 
         public string CodeBlockName { get; set; }
 
-        public Label(string codeBlockName)
+        protected Label()
         {
+
+        }
+
+        public Label(string identifier, string codeBlockName)
+        {
+            this.Identifier = identifier;
             this.CodeBlockName = codeBlockName;
         }
 
-        public Label(string codeBlockName, int offset)
+        public Label(string identifier, string codeBlockName, int offset)
         {
+            this.Identifier = identifier;
             this.CodeBlockName = codeBlockName;
             this.Offset = offset;
         }
@@ -38,15 +45,18 @@ namespace UCP
     }
 
     public class InlineLabel : Label {
-        public InlineLabel(string codeBlockName) : base(codeBlockName)
+        public InlineLabel(string identifier) : base()
         {
-            this.CodeBlockName = codeBlockName;
+            this.Identifier = identifier;
+            CrusaderLabels.Add(Identifier, this);
         }
     }
 
     public class Reference
     {
         public int Value { get; set; }
+
+        public int BaseAddress { get; set; }
 
         public string TargetLabelName { get; set; }
 
