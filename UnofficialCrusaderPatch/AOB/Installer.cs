@@ -69,6 +69,42 @@ namespace UCP
                             }
                         }
                     }
+                    else if (change is CodeAllocation)
+                    {
+                        CodeAllocation codeReplacement = change as CodeAllocation;
+                        int currentPosition = codeAllocationCounter;
+
+                        // Choose action based on current element
+                        foreach (var element in change.GetByteValue())
+                        {
+                            if (element.value is InlineLabel)
+                            {
+                                continue; // This is a non-code element
+                            }
+                            else
+                            {
+                                //currentPosition += WriteData(element, labelDictionary, data, currentPosition);
+                            }
+                        }
+                    }
+                    else if (change is MemoryAllocation)
+                    {
+                        MemoryAllocation codeReplacement = change as MemoryAllocation;
+                        int currentPosition = codeAllocationCounter;
+
+                        // Choose action based on current element
+                        foreach (var element in change.GetByteValue())
+                        {
+                            if (element.value is InlineLabel)
+                            {
+                                continue; // This is a non-code element
+                            }
+                            else
+                            {
+                                //currentPosition += WriteData(element, labelDictionary, data, currentPosition);
+                            }
+                        }
+                    }
                 }
             }
         }
