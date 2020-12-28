@@ -40,9 +40,9 @@ namespace UCP
                     {
                         // cache current unti moved
                         new BinAlloc("currentUnitMoved", 4),
-                        
+
                         new BinSkip(9),
-                        
+
                         new BinHook(6)
                         {
                             0x89, 0x15, new BinRefTo("currentUnitMoved", false), // mov [currentUnitMoved],edx
@@ -55,7 +55,7 @@ namespace UCP
                     {
                         // need 120k bytes, because we need 3*4 bytes per unit, and the SHC-E max is 10k units
                         new BinAlloc("savedUnitDestinationForClimbing", 120000),
-                        
+
                         new BinSkip(12), // skip 12 bytes
                         
                         new BinHook(10)
@@ -398,7 +398,7 @@ namespace UCP
 
                 }
             },
-            
+
             new Change("u_fix_lord_animation_stuck_movement", ChangeType.Bugfix, true)
             {
                 new DefaultHeader("u_fix_lord_animation_stuck_movement")
@@ -446,7 +446,7 @@ namespace UCP
                     }
                 }
             },
-          
+
             new Change("o_fix_small_wall_placement_count", ChangeType.Bugfix, true)
             {
                 new DefaultHeader("o_fix_small_wall_placement_count")
@@ -484,7 +484,7 @@ namespace UCP
                     }
                 }
             },
-          
+
             new Change("u_fix_applefarm_blocking", ChangeType.Bugfix, true)
             {
                 new DefaultHeader("u_fix_applefarm_blocking")
@@ -578,7 +578,7 @@ namespace UCP
                     {
                         new BinAddress("UnitAttributeOffset",43)
                     },
-                    
+
                     new BinaryEdit("ai_fix_crusader_archers_pitch")
                     {
                         new BinAddress("CurrentTargetIndex",2),
@@ -1056,9 +1056,9 @@ namespace UCP
                     new BinaryEdit("u_spearmen_run")
                     {
                         new BinSkip(5),
-                        
+
                         new BinAddress("IsSelectableAddress", 3),
-                    
+
                         new BinHook(7)
                         {
                             0x53, // push ebx
@@ -1075,6 +1075,52 @@ namespace UCP
             #endregion
 
             #region OTHER
+
+            new Change("mp_spectator", ChangeType.Other, true)
+            {
+                new DefaultHeader("mp_spectator")
+                {
+                    new BinaryEdit("mp_assassinspec")
+                    {
+                        // show assassins
+                        new BinAddress("assassinowner", 0xF, false),
+                        new BinSkip(0x19),
+                        new BinHook(0x7)
+                        {
+                            /*new BinBytes(new byte[]
+                            {
+                                0x0F, 0xB7, 0x86, 0xCA, 0xD0, 0x45, 0x01,
+                                0x66, 0x3D, 0x49, 0x00,
+                                0x0F, 0xBF, 0x96, 0x48, 0xD0, 0x45, 0x01,
+                            }),*/
+
+                            0x3B, 0x04, 0x8D, new BinRefTo("assassinowner", false),
+                            0x74, 0x2A,
+
+                            /*0x60,                                                                *//*pusha*//*
+                            0x75, 0x28,*/
+                            0x60,
+                            0x31, 0xDB,                                                          /*xor ebx, ebx*/
+                            0x8B, 0x0D, 0xDC, 0xAA, 0x4B, 0x02,                                  /*mov ecx,[024BAADC]*/
+
+                            // check if you are a dead and without team
+                            0x80, 0x3C, 0x8D, 0x14, 0xA9, 0x4B, 0x02, 0x00,                      /*cmp byte ptr [ecx*4+024BA914],00*/
+                            0x74, 0x09,
+                            0x80, 0xB9, 0xB6, 0xAA, 0x4B, 0x02, 0x00,                            /*cmp byte ptr [ecx*4+024BAAB6],00*/
+                            0x74, 0x0B,
+
+
+                            0x85, 0xD2,                                                          /*test edx,edx*/
+                            0xC6, 0x81, 0x56, 0xA5, 0x4B, 0x02, 0x00,                            /*mov byte ptr [ecx+0x24BA556], 0*/
+                            0xEB, 0x02,
+                            0x31, 0xDB,                                                          /*xor ebx, ebx*/
+                            0x61,                                                                /*popa*/
+                        }
+                    }
+
+                }
+            },
+
 
             /*
              *  FIRE COOLDOWN

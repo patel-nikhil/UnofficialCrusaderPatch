@@ -1,6 +1,16 @@
 // ======================
 //         dev
 // ======================
+mp_spectator
+{
+"Make assassins visible and stats hidden for dead players"
+}
+
+mp_spectator_descr
+{
+"Make assassins visible and stats hidden for dead players"
+}
+
 o_restore_arabian_engineer_speech
 {
 "Restore engineer arabian speech"

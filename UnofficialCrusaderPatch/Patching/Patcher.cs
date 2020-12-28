@@ -135,6 +135,7 @@ namespace UCP.Patching
             // Apply each selected binary change
             foreach (Change change in todoList)
             {
+                if (!xtreme && change.TitleIdent.Equals("mp_spectator")) continue;
                 change.Activate(args);
                 perc.Set(++todoIndex / todoCount);
             }
