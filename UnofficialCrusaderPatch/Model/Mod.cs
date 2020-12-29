@@ -5,7 +5,7 @@ using System.Text;
 
 namespace UCP
 {
-    class Mod
+    public class Mod
     {
         public bool IsEnabled { get; set; }
 
@@ -36,6 +36,22 @@ namespace UCP
         public ValueRetriever Value;
 
         public ExtremeBar(string codeBlockName, int[] parameters) : base(codeBlockName, parameters)
+        {
+            /*this.Value = new ValueRetriever((byte)10, Parameters[0], new FixedReference("ai_fix_crusader_archers_pitch_attr"), new RelativeReference("label3"), new InlineLabel("label2"));*/
+            this.Value = new ValueRetriever((byte)10, Parameters[0], new FixedReference("ai_fix_crusader_archers_pitch_attr"), new RelativeReference("label3"), new InlineLabel("label2"));
+        }
+
+        public override ValueRetriever GetByteValue()
+        {
+            return Value;
+        }
+    }
+
+    class CodeAlloc : CodeAllocation
+    {
+        public ValueRetriever Value;
+
+        public CodeAlloc(string codeBlockName, int[] parameters) : base(parameters)
         {
             /*this.Value = new ValueRetriever((byte)10, Parameters[0], new FixedReference("ai_fix_crusader_archers_pitch_attr"), new RelativeReference("label3"), new InlineLabel("label2"));*/
             this.Value = new ValueRetriever((byte)10, Parameters[0], new FixedReference("ai_fix_crusader_archers_pitch_attr"), new RelativeReference("label3"), new InlineLabel("label2"));

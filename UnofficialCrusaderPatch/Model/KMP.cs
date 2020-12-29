@@ -1,205 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 
 namespace UCP
 {
-    public class AOB
-    {
-        public static Dictionary<string, AOB> AOBList = new Dictionary<string, AOB>();
-
-        public ByteOrWildCard[] Elements { get; }
-        public int? Address { get; set; }
-
-        public AOB(string codeBlockName)
-        {
-            AOBList.Add(codeBlockName, this);
-            this.Address = null;
-            Assembly asm = Assembly.GetExecutingAssembly();
-
-            // check if code block file is there
-            string file = string.Format("UCP.CodeBlocks.{0}.block", codeBlockName);
-            if (!asm.GetManifestResourceNames().Contains(file))
-                throw new Exception("MISSING BLOCK FILE " + file);
-
-            string codeBlockContent;
-            // read code block file
-            using (Stream stream = asm.GetManifestResourceStream(file))
-            {
-                using (StreamReader reader = new StreamReader(stream))
-                {
-                    codeBlockContent = reader.ReadToEnd();
-                }
-            }
-
-            if (codeBlockContent.Length % 3 != 2)
-            {
-                throw new Exception();
-            }
-            Elements = new ByteOrWildCard[codeBlockContent.Length / 3 + 1];
-
-            var index = 0;
-            for (var i = 0; i <= codeBlockContent.Length - 2; i+=3, index++)
-            {
-                ByteOrWildCard elem;
-                try
-                {
-                    elem = hexToByte(codeBlockContent.Substring(i, 2));
-                }
-                catch (InvalidCastException)
-                {
-                    throw new Exception("Invalid codeblock " + codeBlockName);
-                }
-                    
-                if (i != codeBlockContent.Length - 2)
-                {
-                    if (codeBlockContent[i+2] != ' ')
-                    {
-                        throw new Exception("Invalid codeblock " + codeBlockName);
-                    }
-                }
-                Elements[index] = elem;
-            }
-        }
-
-        internal void SetAddress(byte[] data)
-        {
-            if (this.Address == null)
-            {
-                KMP kmp = new KMP(this.Elements);
-                this.Address = kmp.findFirstInstance(data); // SHC data byte array
-            }
-            if (this.Address == -1)
-            {
-                throw new Exception();
-            }
-        }
-
-        public ByteOrWildCard hexToByte(string hexString)
-        {
-            if (hexString[0] == '?' && hexString[1] == '?')
-            {
-                return new ByteOrWildCard(WildCard.Instance);
-            }
-            return new ByteOrWildCard((byte)int.Parse(hexString, System.Globalization.NumberStyles.HexNumber));
-        }
-    }
-
-    public class ByteOrWildCard
-    {
-        dynamic value;
-
-        public ByteOrWildCard(byte element)
-        {
-            this.value = element;
-        }
-
-        public ByteOrWildCard(short element)
-        {
-            this.value = element;
-        }
-
-        public ByteOrWildCard(WildCard element)
-        {
-            this.value = element;
-        }
-        
-        public bool IsWildCard => this.value is WildCard;
-
-        public int IntValue
-        {
-            get {
-                if (this.value is byte)
-                {
-                    return (int)this.value;
-                }
-                else
-                {
-                    return 0x100;
-                }
-            }
-        }
-
-        public static bool operator ==(ByteOrWildCard first, ByteOrWildCard second)
-        {
-            if (first == null || second == null)
-            {
-                return false;
-            }
-
-            if (first.value is byte)
-            {
-                if (second.value is byte)
-                {
-                    return first.value == second.value;
-                }
-                else if (second.value is WildCard)
-                {
-                    return true;
-                }
-            } else
-            {
-                if (second.value is byte || second.value is WildCard)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        public static bool operator !=(ByteOrWildCard first, ByteOrWildCard second)
-        {
-            if (first == null || second == null)
-            {
-                return true;
-            }
-
-            if (first.value is byte || first.value is int)
-            {
-                if (second.value is byte || second.value is int)
-                {
-                    return first.value != second.value;
-                }
-                else if (second.value is WildCard)
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                if (second.value is byte || second.value is int || second.value is WildCard)
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj is ByteOrWildCard)
-            {
-                return (obj as ByteOrWildCard) == this;
-            }
-            return false;
-        }
-
-        public override int GetHashCode()
-        {
-            return this.value.GetHashCode();
-        }
-    }
-
-    public class WildCard
-    {
-        private WildCard() { }
-
-        public static WildCard Instance { get; } = new WildCard();
-    }
-
     public class KMP
     {
         const int R = 0x101;
@@ -293,7 +98,7 @@ namespace UCP
                     }
 
                 }
-            } 
+            }
             else
             {
                 searchPattern = pattern;
@@ -339,7 +144,7 @@ namespace UCP
 
             while (address != -1 && match == false)
             {
-                address = search(data, address == null? 0 : address.Value + 1); // Need to add this in case pattern matches but regions split by wildcards do not
+                address = search(data, address == null ? 0 : address.Value + 1); // Need to add this in case pattern matches but regions split by wildcards do not
                 if (address.Value != -1)
                 {
                     match = true;

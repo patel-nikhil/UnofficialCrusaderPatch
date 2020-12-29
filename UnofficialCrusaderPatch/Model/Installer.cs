@@ -6,6 +6,30 @@ using System.Text;
 
 namespace UCP
 {
+    public class InstallData
+    {
+        public int CodeAllocationCounter { get; set; }
+        public int MemoryAllocationCounter { get; set; }
+
+        public InstallData()
+        {
+            CodeAllocationCounter = 0;
+            MemoryAllocationCounter = 0;
+        }
+    }
+
+    public class AllocatedBytes
+    {
+        public List<byte> codeAllocations { get; set; }
+        public List<byte> memoryAllocations { get; set; }
+
+        public AllocatedBytes()
+        {
+            codeAllocations = new List<byte>();
+            memoryAllocations = new List<byte>();
+        }
+    }
+
     public class Installer
     {
         static string SHC_PATH = "C:/Programs/Steam/steamapps/common/Stronghold Crusader Extreme/Stronghold Crusader.exe";
@@ -21,88 +45,109 @@ namespace UCP
             return File.ReadAllBytes(SHCE_PATH);
         }
 
-        public static void Install(bool isExtreme)
+        public static void InstallMods(bool isExtreme)
         {
-            int codeAllocationCounter = 0;
-            int memoryAllocationCounter = 0;
+            List<Mod> modList = new List<Mod>();
 
-/*            List<byte> codeAllocations = new List<byte>();
-            List<byte> memoryAllocations = new List<byte>();*/
+            Mod testMod = new Mod();
+            testMod.IsEnabled = true;
+            modList.Add(testMod);
 
             byte[] data = isExtreme ? ReadExtreme() : ReadCrusader();
+            SectionWriter writer = new SectionWriter(data);
+            InstallData installData = new InstallData();
+            AllocatedBytes allocatedBytes = new AllocatedBytes();
+            foreach (var mod in modList)
+            {
+                InstallCodeReplacementAndRetrieveAllocations(data, mod, isExtreme, installData, allocatedBytes);
+            }
+
+            /*installData.CodeAllocationCounter = 0x1000;
+            installData.MemoryAllocationCounter = 0x1000;*/
+            WriteSections(writer, ref data, installData, allocatedBytes);
+            File.WriteAllBytes("random.exe", data);
+        }
+
+        private static void WriteAppendedCode(List<byte> codeAllocations)
+        {
+            
+        }
+
+        private static void WriteSections(SectionWriter writer, ref byte[] data, InstallData installData, AllocatedBytes allocatedBytes)
+        {
+            writer.AddCodeSection(ref data, installData.CodeAllocationCounter, allocatedBytes.codeAllocations);
+            writer.AddDataSection(ref data, installData.MemoryAllocationCounter, allocatedBytes.memoryAllocations);
+        }
+
+        private static void InstallCodeReplacementAndRetrieveAllocations(byte[] data, Mod mod, bool isExtreme, InstallData installData, AllocatedBytes allocatedBytes)
+        {
             Dictionary<string, Label> labelDictionary = isExtreme ? Label.ExtremeLabels : Label.CrusaderLabels;
 
-            Mod mod = new Mod();
-            mod.IsEnabled = true;
-            if (mod.IsEnabled)
+            // Initializes labels that are based on fixed offset from an AOB. Does not initialize InlineLabels
+            InitializeFixedLabelAddresses(mod.Labels, data);
+            foreach (var change in mod.Changes)
             {
-                // Initializes labels that are based on fixed offset from an AOB. Does not initialize InlineLabels
-                InitializeFixedLabelAddresses(mod.Labels, data);
-                foreach (var change in mod.Changes)
+                ResolveBaseAddresses(change, data, ref installData);
+            }
+
+            foreach(var change in mod.Changes)
+            {
+                if (change is CodeReplacement)
                 {
-                    ResolveBaseAddresses(change, data, ref codeAllocationCounter, ref memoryAllocationCounter);
+                    CodeReplacement codeReplacement = change as CodeReplacement;
+
+                    // Get start address for the CodeReplacement
+                    AOB aob = AOB.AOBList[codeReplacement.CodeBlockName];
+                    aob.SetAddress(data);
+
+                    int currentPosition = aob.Address.Value;
+
+                    // Choose action based on current element
+                    foreach (var element in change.GetByteValue())
+                    {
+                        if (element.value is InlineLabel)
+                        {
+                            continue; // This is a non-code element
+                        }
+                        else
+                        {
+                            currentPosition += WriteData(element, labelDictionary, data, currentPosition);
+                        }
+                    }
                 }
-
-
-                foreach(var change in mod.Changes)
+                else if (change is CodeAllocation)
                 {
-                    if (change is CodeReplacement)
+                    CodeAllocation codeReplacement = change as CodeAllocation;
+                    int currentPosition = installData.CodeAllocationCounter;
+
+                    // Choose action based on current element
+                    foreach (var element in change.GetByteValue())
                     {
-                        CodeReplacement codeReplacement = change as CodeReplacement;
-
-                        // Get start address for the CodeReplacement
-                        AOB aob = AOB.AOBList[codeReplacement.CodeBlockName];
-                        aob.SetAddress(data);
-
-                        int currentPosition = aob.Address.Value;
-
-                        // Choose action based on current element
-                        foreach (var element in change.GetByteValue())
+                        if (element.value is InlineLabel)
                         {
-                            if (element.value is InlineLabel)
-                            {
-                                continue; // This is a non-code element
-                            }
-                            else
-                            {
-                                currentPosition += WriteData(element, labelDictionary, data, currentPosition);
-                            }
+                            continue; // This is a non-code element
+                        }
+                        else
+                        {
+                            //currentPosition += WriteData(element, labelDictionary, data, currentPosition);
                         }
                     }
-                    else if (change is CodeAllocation)
-                    {
-                        CodeAllocation codeReplacement = change as CodeAllocation;
-                        int currentPosition = codeAllocationCounter;
+                }
+                else if (change is MemoryAllocation)
+                {
+                    MemoryAllocation codeReplacement = change as MemoryAllocation;
+                    int currentPosition = installData.CodeAllocationCounter;
 
-                        // Choose action based on current element
-                        foreach (var element in change.GetByteValue())
+                    // Choose action based on current element
+                    foreach (var element in change.GetByteValue())
+                    {
+                        if (element.value is InlineLabel)
                         {
-                            if (element.value is InlineLabel)
-                            {
-                                continue; // This is a non-code element
-                            }
-                            else
-                            {
-                                //currentPosition += WriteData(element, labelDictionary, data, currentPosition);
-                            }
+                            continue; // This is a non-code element
                         }
-                    }
-                    else if (change is MemoryAllocation)
-                    {
-                        MemoryAllocation codeReplacement = change as MemoryAllocation;
-                        int currentPosition = codeAllocationCounter;
-
-                        // Choose action based on current element
-                        foreach (var element in change.GetByteValue())
+                        else
                         {
-                            if (element.value is InlineLabel)
-                            {
-                                continue; // This is a non-code element
-                            }
-                            else
-                            {
-                                //currentPosition += WriteData(element, labelDictionary, data, currentPosition);
-                            }
+                            //currentPosition += WriteData(element, labelDictionary, data, currentPosition);
                         }
                     }
                 }
@@ -122,7 +167,7 @@ namespace UCP
         }
 
         // Define base addresses for InlineLabels and References
-        private static void ResolveBaseAddresses(IChange change, byte[] data, ref int codeAllocationCounter, ref int memoryAllocationCounter)
+        private static void ResolveBaseAddresses(IChange change, byte[] data, ref InstallData installData)
         {
             int startPosition;
             if (change is CodeReplacement)
@@ -136,11 +181,11 @@ namespace UCP
             }
             else if (change is CodeAllocation)
             {
-                startPosition = codeAllocationCounter;
+                startPosition = installData.CodeAllocationCounter;
             }
             else if (change is MemoryAllocation)
             {
-                startPosition = memoryAllocationCounter;
+                startPosition = installData.MemoryAllocationCounter;
             }
             else
             {
@@ -176,10 +221,10 @@ namespace UCP
 
             if (change is CodeAllocation)
             {
-                codeAllocationCounter += currentPosition - startPosition;
+                installData.CodeAllocationCounter += currentPosition - startPosition;
             } else if (change is MemoryAllocation)
             {
-                memoryAllocationCounter += currentPosition - startPosition;
+                installData.MemoryAllocationCounter += currentPosition - startPosition;
             }
         }
 
