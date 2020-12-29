@@ -63,9 +63,9 @@ namespace UCP
                         currentPosition += 4;
                     }
                 }
-                else if (element.value is InlineLabel) // A label is a non-code marker so do not increment current position
+                else if (element.value is Label) // A label is a non-code marker so do not increment current position
                 {
-                    (element.value as InlineLabel).Address = currentPosition;
+                    (element.value as Label).Address = currentPosition;
                 }
                 else if (element.value is Reference)
                 {

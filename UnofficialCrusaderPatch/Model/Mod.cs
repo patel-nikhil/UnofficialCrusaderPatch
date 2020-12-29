@@ -36,7 +36,7 @@ namespace UCP
     {
         public ExtremeBar(string codeBlockName, int[] parameters) : base(codeBlockName, parameters)
         {
-            this.Value = new InlineValueRetriever() { (byte)10, (byte)0x8B, (byte)0x1D, new FixedReference("ai_fix_crusader_archers_pitch_attr"), (byte)0x0F, (byte)0x85, new RelativeReference("label3"), new InlineLabel("label2") };
+            this.Value = new InlineValueRetriever() { (byte)0x90, (byte)0x8B, (byte)0x1D, new FixedReference("label4"), (byte)0x0F, (byte)0x85, new RelativeReference("label4"), new InlineLabel("label2") };
         }
     }
 
@@ -44,7 +44,7 @@ namespace UCP
     {
         public CodeAlloc(int[] parameters) : base(parameters)
         {
-            this.Value = new AllocatedValueRetriever() { (byte)0x8B, (byte)0x1D, new FixedReference("ai_fix_crusader_archers_pitch_attr"), (byte)0x0F, (byte)0x85, new AllocatedRelativeReference("label3"), new AllocatedCodeLabel("label4") };
+            this.Value = new AllocatedValueRetriever() { (byte)0x8B, (byte)0x1D, new FixedReference("label4"), (byte)0x0F, (byte)0x85, new AllocatedRelativeReference("label4"), new AllocatedCodeLabel("label4") };
         }
     }
 
@@ -53,7 +53,7 @@ namespace UCP
         public MemAlloc(int[] parameters) : base(parameters)
         {
             /*this.Value = new ValueRetriever((byte)10, Parameters[0], new FixedReference("ai_fix_crusader_archers_pitch_attr"), new RelativeReference("label3"), new InlineLabel("label2"));*/
-            this.Value = new AllocatedValueRetriever() { (byte)0x8B, (byte)0x1D, new FixedReference("ai_fix_crusader_archers_pitch_attr"), (byte)0x0F, (byte)0x85, new AllocatedRelativeReference("label3"), new AllocatedCodeLabel("label5") };
+            this.Value = new AllocatedValueRetriever() { (byte)0x8B, (byte)0x1D, new FixedReference("label4"), (byte)0x0F, (byte)0x85, new AllocatedRelativeReference("label4"), new AllocatedCodeLabel("label5") };
         }
     }
 }
