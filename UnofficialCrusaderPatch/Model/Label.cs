@@ -52,4 +52,24 @@ namespace UCP
             ExtremeLabels.Add(Identifier, this);
         }
     }
+
+    public class AllocatedCodeLabel : Label
+    {
+        public AllocatedCodeLabel(string identifier) : base()
+        {
+            this.Identifier = identifier;
+            CrusaderLabels.Add(Identifier, this);
+            ExtremeLabels.Add(Identifier, this);
+        }
+    }
+
+    public class AllocatedMemoryLabel : Label
+    {
+        public AllocatedMemoryLabel(string identifier) : base()
+        {
+            this.Identifier = identifier;
+            CrusaderLabels.Add(Identifier, this);
+            ExtremeLabels.Add(Identifier, this);
+        }
+    }
 }

@@ -24,42 +24,36 @@ namespace UCP
 
             /*Label.CrusaderLabels.Add("mylabel", new Label("ai_fix_crusader_archers_pitch_attr", 0));*/
             Changes.Add(new ExtremeBar("ai_fix_crusader_archers_pitch_attr", new int[] { 0, 0 }));
-/*            Changes.Add(new CodeReplacement("ai_fix_crusader_archers_pitch_attr"));
-            Changes.Add(new CodeAllocation("ai_fix_crusader_archers_pitch_attr"));
-            Changes.Add(new MemoryAllocation("ai_fix_crusader_archers_pitch_attr"));*/
-
+            Changes.Add(new CodeAlloc(new int[] { 50 }));
+            Changes.Add(new MemAlloc(new int[] { 100 }));
+            /*            Changes.Add(new CodeReplacement("ai_fix_crusader_archers_pitch_attr"));
+                        Changes.Add(new CodeAllocation("ai_fix_crusader_archers_pitch_attr"));
+                        Changes.Add(new MemoryAllocation("ai_fix_crusader_archers_pitch_attr"));*/
         }
     }
 
     class ExtremeBar: CodeReplacement
     {
-        public ValueRetriever Value;
-
         public ExtremeBar(string codeBlockName, int[] parameters) : base(codeBlockName, parameters)
         {
-            /*this.Value = new ValueRetriever((byte)10, Parameters[0], new FixedReference("ai_fix_crusader_archers_pitch_attr"), new RelativeReference("label3"), new InlineLabel("label2"));*/
-            this.Value = new ValueRetriever((byte)10, Parameters[0], new FixedReference("ai_fix_crusader_archers_pitch_attr"), new RelativeReference("label3"), new InlineLabel("label2"));
-        }
-
-        public override ValueRetriever GetByteValue()
-        {
-            return Value;
+            this.Value = new InlineValueRetriever() { (byte)10, (byte)0x8B, (byte)0x1D, new FixedReference("ai_fix_crusader_archers_pitch_attr"), (byte)0x0F, (byte)0x85, new RelativeReference("label3"), new InlineLabel("label2") };
         }
     }
 
     class CodeAlloc : CodeAllocation
     {
-        public ValueRetriever Value;
+        public CodeAlloc(int[] parameters) : base(parameters)
+        {
+            this.Value = new AllocatedValueRetriever() { (byte)0x8B, (byte)0x1D, new FixedReference("ai_fix_crusader_archers_pitch_attr"), (byte)0x0F, (byte)0x85, new AllocatedRelativeReference("label3"), new AllocatedCodeLabel("label4") };
+        }
+    }
 
-        public CodeAlloc(string codeBlockName, int[] parameters) : base(parameters)
+    class MemAlloc : MemoryAllocation
+    {
+        public MemAlloc(int[] parameters) : base(parameters)
         {
             /*this.Value = new ValueRetriever((byte)10, Parameters[0], new FixedReference("ai_fix_crusader_archers_pitch_attr"), new RelativeReference("label3"), new InlineLabel("label2"));*/
-            this.Value = new ValueRetriever((byte)10, Parameters[0], new FixedReference("ai_fix_crusader_archers_pitch_attr"), new RelativeReference("label3"), new InlineLabel("label2"));
-        }
-
-        public override ValueRetriever GetByteValue()
-        {
-            return Value;
+            this.Value = new AllocatedValueRetriever() { (byte)0x8B, (byte)0x1D, new FixedReference("ai_fix_crusader_archers_pitch_attr"), (byte)0x0F, (byte)0x85, new AllocatedRelativeReference("label3"), new AllocatedCodeLabel("label5") };
         }
     }
 }

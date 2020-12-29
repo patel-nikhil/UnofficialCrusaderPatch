@@ -28,4 +28,9 @@ namespace UCP
     {
         public RelativeReference(string targetLabelName) : base(targetLabelName) { }
     }
+
+    public class AllocatedRelativeReference : Reference
+    {
+        public AllocatedRelativeReference(string targetLabelName) : base(targetLabelName) { }
+    }
 }

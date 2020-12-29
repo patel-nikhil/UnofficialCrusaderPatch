@@ -11,12 +11,17 @@ namespace UCP
         ValueRetriever GetByteValue();
     }
 
-    internal abstract class AbstractChange {
-        public string _codeBlockName;
+    internal abstract class AbstractChange
+    {
+        public abstract ValueRetriever GetByteValue();
     }
+
 
     internal class CodeReplacement : AbstractChange, IChange
     {
+        string _codeBlockName;
+
+        protected InlineValueRetriever Value;
         protected int[] Parameters { get; }
         public string CodeBlockName { get => _codeBlockName; }
         public CodeReplacement(string codeBlockName, int[] parameters)
@@ -29,31 +34,31 @@ namespace UCP
             this._codeBlockName = codeBlockName;
         }
 
-        public virtual ValueRetriever GetByteValue()
+        public override ValueRetriever GetByteValue()
         {
-            return new ValueRetriever(0x00, 0x90, (byte)Parameters[0], 0x5);
+            return Value;
         }
     }
 
-    internal class CodeAllocation : IChange
+    internal class CodeAllocation : AbstractChange, IChange
     {
+        protected AllocatedValueRetriever Value;
         protected int[] Parameters { get; }
         public CodeAllocation(int[] parameters)
         {
             this.Parameters = parameters;
         }
 
-        public CodeAllocation() {
-        }
-
-        public virtual ValueRetriever GetByteValue()
+        public CodeAllocation() { }
+        public override ValueRetriever GetByteValue()
         {
-            return new ValueRetriever(0x00, 0x90, (byte)Parameters[0], 0x5);
+            return Value;
         }
     }
 
-    internal class MemoryAllocation : IChange
+    internal class MemoryAllocation : AbstractChange, IChange
     {
+        protected AllocatedValueRetriever Value;
         protected int[] Parameters { get; }
         public MemoryAllocation(int[] parameters)
         {
@@ -61,10 +66,9 @@ namespace UCP
         }
 
         public MemoryAllocation() { }
-
-        public virtual ValueRetriever GetByteValue()
+        public override ValueRetriever GetByteValue()
         {
-            return new ValueRetriever(0x00, 0x90, (byte)Parameters[0], new NumberOrAddress(0x5));
+            return Value;
         }
     }
 }

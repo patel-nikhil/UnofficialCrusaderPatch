@@ -24,6 +24,16 @@ namespace UCP
             this.value = element;
         }
 
+        public NumberOrAddress(AllocatedCodeLabel element)
+        {
+            this.value = element;
+        }
+
+        public NumberOrAddress(AllocatedMemoryLabel element)
+        {
+            this.value = element;
+        }
+
         public NumberOrAddress(Reference element)
         {
             this.value = element;

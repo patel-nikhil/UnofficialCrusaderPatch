@@ -5,13 +5,15 @@ using System.Text;
 
 namespace UCP
 {
-    internal class SectionWriter
+    internal class SectionHelper
     {
-        List<Section> sectionList;
-        public SectionWriter(byte[] data)
+        public List<Section> sectionList;
+        public int CodeSectionStart { get; set; }
+        public int DataSectionStart { get; set; }
+
+        public SectionHelper(byte[] data)
         {
             sectionList = ReadSections(data);
-            int sectionCount = sectionList.Count;
         }
 
         static int GetNextMultiple(int baseNumber, int number)
@@ -52,7 +54,7 @@ namespace UCP
             return sectionList;
         }
 
-        internal void AddCodeSection(ref byte[] data, int size, List<byte> bytesToWrite)
+        internal void AddCodeSection(ref byte[] data, int size, out int sectionStart, out int sectionVirtualStart)
         {
             bool ucpSectionExists = false;
             
@@ -79,6 +81,8 @@ namespace UCP
                 .withVirtualDataSize(size)
                 .withSectionType(SectionType.EXECUTABLE);
 
+            sectionStart = section.RawDataOffset;
+            sectionVirtualStart = section.VirtualAddress;
             int originalSectionSize = 0;
             if (!ucpSectionExists)
             {
@@ -97,11 +101,10 @@ namespace UCP
                     .withVirtualDataSize(section.VirtualDataSize)
                     .withSectionType(SectionType.EXECUTABLE);
             }
-            AddSection(data, section, originalSectionSize);
-            WriteData(ref data, bytesToWrite, section.RawDataOffset, section.RawDataSize);
+            AddSection(ref data, section, originalSectionSize);
         }
 
-        internal void AddDataSection(ref byte[] data, int size, List<byte> bytesToWrite)
+        internal void AddDataSection(ref byte[] data, int size, out int sectionStart, out int sectionVirtualStart)
         {
             bool ucpDataSectionExists = false;
 
@@ -128,6 +131,8 @@ namespace UCP
                 .withVirtualDataSize(size)
                 .withSectionType(SectionType.DATA);
 
+            sectionStart = section.RawDataOffset;
+            sectionVirtualStart = section.VirtualAddress;
             int originalSectionSize = 0;
             if (!ucpDataSectionExists)
             {
@@ -146,31 +151,24 @@ namespace UCP
                     .withVirtualDataSize(section.VirtualDataSize)
                     .withSectionType(SectionType.DATA);
             }
-            AddSection(data, section, originalSectionSize);
-            WriteData(ref data, bytesToWrite, section.RawDataOffset, section.RawDataSize);
+            AddSection(ref data, section, originalSectionSize);
         }
 
-        void AddSection(byte[] data, Section section, int originalSectionSize)
+        void AddSection(ref byte[] data, Section section, int originalSectionSize)
         {
             int originalImageSize = BitConverter.ToInt32(data, 360);
 
             WriteSectionCount(data, (byte)section.Number);
-            WriteImageSize(data, originalImageSize - originalSectionSize + section.VirtualDataSize);
+            WriteImageSize(data, originalImageSize - originalSectionSize + GetNextMultiple(0x1000, section.VirtualDataSize));
             WriteSectionData(data, section);
+            AdjustSectionSize(ref data, section);
         }
 
-        private void WriteData(ref byte[] data, List<byte> bytesToWrite, int rawDataOffset, int rawDataSize)
+        private void AdjustSectionSize(ref byte[] data, Section section)
         {
-            if (data.Length < rawDataOffset + rawDataSize)
+            if (data.Length != section.RawDataOffset + section.RawDataSize)
             {
-                byte[] newData = new byte[rawDataSize + rawDataOffset];
-                data.CopyTo(newData, 0);
-                bytesToWrite.ToArray().CopyTo(newData, rawDataOffset);
-                data = newData;
-            }
-            else
-            {
-                bytesToWrite.ToArray().CopyTo(data, rawDataOffset);
+                Array.Resize(ref data, GetNextMultiple(0x1000, section.RawDataSize + section.RawDataOffset));
             }
         }
 
