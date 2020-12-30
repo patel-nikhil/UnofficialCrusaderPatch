@@ -36,7 +36,7 @@ namespace UCP
     {
         public ExtremeBar(string codeBlockName, int[] parameters) : base(codeBlockName, parameters)
         {
-            this.Value = new InlineValueRetriever() { (byte)0x90, (byte)0x8B, (byte)0x1D, new FixedReference("label4"), (byte)0x0F, (byte)0x85, new RelativeReference("label4"), new InlineLabel("label2") };
+            this.Value = new InlineValueRetriever() { new SkipPosition(2), (byte)0x90, (byte)0x8B, (byte)0x1D, new FixedReference("label4"), (byte)0x0F, (byte)0x85, new RelativeReference("label4"), new InlineLabel("label2") };
         }
     }
 

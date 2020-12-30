@@ -102,6 +102,7 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="Localization\Localization.cs" />
     <Compile Include="Localization\TextReferencer.cs" />
+    <Compile Include="Model\SkipPosition.cs" />
     <Compile Include="Model\ValueRetriever.cs" />
     <Compile Include="Model\Writer.cs" />
     <Compile Include="Patching\BinElements\BinCode.cs" />

@@ -72,6 +72,10 @@ namespace UCP
                     (element.value as Reference).BaseAddress = currentPosition;
                     currentPosition += 4;
                 }
+                else if (element.value is SkipPosition)
+                {
+                    currentPosition += (element.value as SkipPosition).Count;
+                }
             }
 
             if (change is CodeAllocation)

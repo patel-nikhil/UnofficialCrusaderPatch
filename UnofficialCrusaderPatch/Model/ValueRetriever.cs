@@ -19,14 +19,35 @@ namespace UCP
 
         }
 
+        public void Add(SkipPosition value)
+        {
+            this.Elements.Add(new NumberOrAddress(value));
+        }
+
         public void Add(byte value)
         {
             this.Elements.Add(new NumberOrAddress(value));
         }
 
+        public void Add(byte[] value)
+        {
+            foreach(var elem in value)
+            {
+                this.Elements.Add(new NumberOrAddress(elem));
+            }
+        }
+
         public void Add(int value)
         {
             this.Elements.Add(new NumberOrAddress(value));
+        }
+
+        public void Add(int[] value)
+        {
+            foreach (var elem in value)
+            {
+                this.Elements.Add(new NumberOrAddress(elem));
+            }
         }
 
         public void Add(InlineLabel value)
@@ -61,7 +82,6 @@ namespace UCP
     }
 
 
-
     public class AllocatedValueRetriever : ValueRetriever, IEnumerable<NumberOrAddress>
     {
         public List<NumberOrAddress> Elements = new List<NumberOrAddress>();
@@ -71,14 +91,35 @@ namespace UCP
 
         }
 
+        public void Add(SkipPosition value)
+        {
+            this.Elements.Add(new NumberOrAddress(value));
+        }
+
         public void Add(byte value)
         {
             this.Elements.Add(new NumberOrAddress(value));
         }
 
+        public void Add(byte[] value)
+        {
+            foreach (var elem in value)
+            {
+                this.Elements.Add(new NumberOrAddress(elem));
+            }
+        }
+
         public void Add(int value)
         {
             this.Elements.Add(new NumberOrAddress(value));
+        }
+
+        public void Add(int[] value)
+        {
+            foreach (var elem in value)
+            {
+                this.Elements.Add(new NumberOrAddress(elem));
+            }
         }
 
         public void Add(AllocatedCodeLabel value)

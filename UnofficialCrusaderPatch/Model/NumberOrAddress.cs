@@ -19,6 +19,11 @@ namespace UCP
             this.value = element;
         }
 
+        public NumberOrAddress(SkipPosition element)
+        {
+            this.value = element;
+        }
+
         public NumberOrAddress(InlineLabel element)
         {
             this.value = element;

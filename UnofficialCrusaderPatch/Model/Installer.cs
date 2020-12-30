@@ -88,6 +88,10 @@ namespace UCP
                         {
                             continue; // This is a non-code element
                         }
+                        else if (element.value is SkipPosition)
+                        {
+                            currentPosition += (element.value as SkipPosition).Count;
+                        }
                         else
                         {
                             currentPosition += WriteCode(element, labelDictionary, data, currentPosition, allocatedCodeSectionStart, allocatedCodeSectionVirtualStart, allocatedMemorySectionStart, allocatedMemorySectionVirtualStart, 0);
@@ -106,6 +110,10 @@ namespace UCP
                         {
                             continue; // This is a non-code element
                         }
+                        else if (element.value is SkipPosition)
+                        {
+                            currentPosition += (element.value as SkipPosition).Count;
+                        }
                         else
                         {
                             currentPosition += WriteCode(element, labelDictionary, data, currentPosition, allocatedCodeSectionStart, allocatedCodeSectionVirtualStart, allocatedMemorySectionStart, allocatedMemorySectionVirtualStart, 1);
@@ -123,6 +131,10 @@ namespace UCP
                         if (element.value is Label)
                         {
                             continue; // This is a non-code element
+                        }
+                        else if (element.value is SkipPosition)
+                        {
+                            currentPosition += (element.value as SkipPosition).Count;
                         }
                         else
                         {
