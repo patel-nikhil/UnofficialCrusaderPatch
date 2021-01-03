@@ -84,18 +84,51 @@
     <Compile Include="AIC\Utils\PersonalityEnums\WorkshopSettings.cs" />
     <Compile Include="AIC\Utils\RWAttributes.cs" />
     <Compile Include="AIV\AIVView.cs" />
+    <Compile Include="Model\AddressResolver.cs" />
+    <Compile Include="Model\AOB.cs" />
+    <Compile Include="Model\ByteOrWildCard.cs" />
+    <Compile Include="Model\Edit.cs" />
+    <Compile Include="Model\Installer.cs" />
+    <Compile Include="Model\InstallHelper.cs" />
+    <Compile Include="Model\KMP.cs" />
+    <Compile Include="Model\Label.cs" />
+    <Compile Include="Model\Mod.cs" />
+    <Compile Include="Model\AssemblyElement.cs" />
+    <Compile Include="Model\Reference.cs" />
+    <Compile Include="Model\Section.cs" />
+    <Compile Include="Model\SectionHelper.cs" />
     <Compile Include="Configuration.cs" />
     <Compile Include="Debug.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Localization\Localization.cs" />
     <Compile Include="Localization\TextReferencer.cs" />
+    <Compile Include="Model\SkipPosition.cs" />
+    <Compile Include="Model\ValueRetriever.cs" />
+    <Compile Include="Model\Writer.cs" />
+    <Compile Include="Mods\DisableDemolishInaccessible.cs" />
+    <Compile Include="Mods\DisableExtremeBar.cs" />
+    <Compile Include="Mods\DisableOxTetherSpam.cs" />
+    <Compile Include="Mods\FixFireBallistaTargeting.cs" />
+    <Compile Include="Mods\FixLaddermenEnclosedKeep.cs" />
+    <Compile Include="Mods\GenericMod.cs" />
+    <Compile Include="Mods\TestMod.cs" />
+    <Compile Include="Mods\UnlimitedSiegeOnTowers.cs" />
+    <Compile Include="Patching\BinElements\ADD.cs" />
     <Compile Include="Patching\BinElements\BinCode.cs" />
     <Compile Include="Patching\BinElements\BinCollection.cs" />
+    <Compile Include="Patching\BinElements\CMP.cs" />
+    <Compile Include="Patching\BinElements\INC.cs" />
+    <Compile Include="Patching\BinElements\JMP.cs" />
+    <Compile Include="Patching\BinElements\MOV.cs" />
     <Compile Include="Patching\BinElements\OpCodes.cs" />
+    <Compile Include="Patching\BinElements\POP.cs" />
+    <Compile Include="Patching\BinElements\PUSH.cs" />
     <Compile Include="Patching\BinElements\Referencers\BinAddress.cs" />
     <Compile Include="Patching\BinElements\Referencers\BinAlloc.cs" />
     <Compile Include="AIV\AIVChange.cs" />
     <Compile Include="Patching\BinElements\Register.cs" />
+    <Compile Include="Patching\BinElements\SUB.cs" />
+    <Compile Include="Patching\BinElements\XOR.cs" />
     <Compile Include="Patching\EditTypes\BinArgs.cs" />
     <Compile Include="Patching\BinElements\StructTypes\BinBytes.cs" />
     <Compile Include="Patching\BinElements\BinElement.cs" />
@@ -1569,6 +1602,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="CodeBlocks\o_fix_fletcher_bug.block" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Mods\Other\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
