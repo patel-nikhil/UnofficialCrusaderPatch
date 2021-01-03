@@ -111,6 +111,7 @@
     <Compile Include="Mods\FixFireBallistaTargeting.cs" />
     <Compile Include="Mods\FixLaddermenEnclosedKeep.cs" />
     <Compile Include="Mods\GenericMod.cs" />
+    <Compile Include="Mods\ImproveAIWoodBuying.cs" />
     <Compile Include="Mods\TestMod.cs" />
     <Compile Include="Mods\UnlimitedSiegeOnTowers.cs" />
     <Compile Include="Patching\BinElements\ADD.cs" />

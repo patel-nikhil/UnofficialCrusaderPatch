@@ -23,6 +23,11 @@ namespace UCP.Mods
         {
             new DisableExtremeBar();
             new FixFireBallistaTargeting();
+            new DisableDemolishInaccessible();
+            new DisableOxTetherSpam();
+            new FixLaddermenEnclosedKeep();
+            new UnlimitedSiegeOnTowers();
+            new ImproveAIWoodBuying();
         }
     }
 }

@@ -38,10 +38,13 @@ namespace UCP
             }
             WriteSections(writer, ref data, installData, out int codeSectionStart, out int codeSectionVirtualStart, out int dataSectionStart, out int dataSectionVirtualStart);
 
+            int codeSectionPosition = codeSectionStart, codeSectionVirtualPosition = codeSectionVirtualStart;
+            int dataSectionPosition = dataSectionStart, dataSectionVirtualPosition = dataSectionVirtualStart;
+
             foreach (var mod in GenericMod.ModList)
             {
                 List<IChange> changes = isExtreme ? mod.ExtremeChanges : mod.CrusaderChanges;
-                InstallCodeReplacementAndRetrieveAllocations(data, changes, isExtreme, codeSectionStart, codeSectionVirtualStart, dataSectionStart, dataSectionVirtualStart);
+                InstallCodeReplacementAndRetrieveAllocations(data, changes, isExtreme, ref codeSectionPosition, ref codeSectionVirtualPosition, ref dataSectionPosition, ref dataSectionVirtualPosition);
             }
 
             if (allocatedBytes.codeAllocations.Count > 0)
@@ -67,7 +70,7 @@ namespace UCP
             }
         }
 
-        private static void InstallCodeReplacementAndRetrieveAllocations(byte[] data, List<IChange> changes, bool isExtreme, int allocatedCodeSectionStart, int allocatedCodeSectionVirtualStart, int allocatedMemorySectionStart, int allocatedMemorySectionVirtualStart)
+        private static void InstallCodeReplacementAndRetrieveAllocations(byte[] data, List<IChange> changes, bool isExtreme, ref int allocatedCodeSectionPosition, ref int allocatedCodeSectionVirtualPosition, ref int allocatedMemorySectionPosition, ref int allocatedMemorySectionVirtualPosition)
         {
             Dictionary<string, Label> labelDictionary = isExtreme ? Label.ExtremeLabels : Label.CrusaderLabels;
 
@@ -96,14 +99,21 @@ namespace UCP
                         }
                         else
                         {
-                            currentPosition += WriteCode(element, labelDictionary, data, currentPosition, allocatedCodeSectionStart, allocatedCodeSectionVirtualStart, allocatedMemorySectionStart, allocatedMemorySectionVirtualStart, 0);
+                            currentPosition += WriteCode(
+                                element,
+                                labelDictionary, 
+                                data,
+                                currentPosition,
+                                allocatedCodeSectionPosition,
+                                allocatedCodeSectionVirtualPosition,
+                                allocatedMemorySectionPosition,
+                                allocatedMemorySectionVirtualPosition, 0);
                         }
                     }
                 }
                 else if (change is CodeAllocation)
                 {
                     CodeAllocation codeReplacement = change as CodeAllocation;
-                    int currentPosition = allocatedCodeSectionStart;
 
                     // Choose action based on current element
                     foreach (var element in change.GetByteValue())
@@ -114,18 +124,25 @@ namespace UCP
                         }
                         else if (element.value is SkipPosition)
                         {
-                            currentPosition += (element.value as SkipPosition).Count;
+                            allocatedCodeSectionPosition += (element.value as SkipPosition).Count;
                         }
                         else
                         {
-                            currentPosition += WriteCode(element, labelDictionary, data, currentPosition, allocatedCodeSectionStart, allocatedCodeSectionVirtualStart, allocatedMemorySectionStart, allocatedMemorySectionVirtualStart, 1);
+                            allocatedCodeSectionPosition += WriteCode(
+                                element,
+                                labelDictionary,
+                                data,
+                                allocatedCodeSectionPosition,
+                                allocatedCodeSectionPosition,
+                                allocatedCodeSectionVirtualPosition,
+                                allocatedMemorySectionPosition,
+                                allocatedMemorySectionVirtualPosition, 1);
                         }
                     }
                 }
                 else if (change is MemoryAllocation)
                 {
                     MemoryAllocation codeReplacement = change as MemoryAllocation;
-                    int currentPosition = allocatedMemorySectionStart;
 
                     // Choose action based on current element
                     foreach (var element in change.GetByteValue())
@@ -136,11 +153,19 @@ namespace UCP
                         }
                         else if (element.value is SkipPosition)
                         {
-                            currentPosition += (element.value as SkipPosition).Count;
+                            allocatedMemorySectionPosition += (element.value as SkipPosition).Count;
                         }
                         else
                         {
-                            currentPosition += WriteCode(element, labelDictionary, data, currentPosition, allocatedCodeSectionStart, allocatedCodeSectionVirtualStart, allocatedMemorySectionStart, allocatedMemorySectionVirtualStart, 2);
+                            allocatedMemorySectionPosition += WriteCode(
+                                element, 
+                                labelDictionary, 
+                                data,
+                                allocatedMemorySectionPosition,
+                                allocatedCodeSectionPosition,
+                                allocatedCodeSectionVirtualPosition,
+                                allocatedMemorySectionPosition,
+                                allocatedMemorySectionVirtualPosition, 2);
                         }
                     }
                 }

@@ -261,42 +261,6 @@ namespace UCP
                     }
                 }
             },
-
-            /*
-             * FIRE BALLISTAS ATTACK MONKS AND TUNNELERS
-             */
-
-            new Change("u_fireballistafix", ChangeType.Bugfix, true)
-            {
-                new DefaultHeader("u_fireballistafix")
-                {
-                    new BinaryEdit("u_fireballistatunneler")
-                    {
-                        new BinSkip(13),
-                        new BinHook(6)
-                        {
-                            CMP(EAX, 5), //  cmp eax,05
-                            PUSH(FLAGS), //  pushf
-                            ADD(EAX, -0x16), //  add eax,-0x16
-                            POP(FLAGS), //  popf
-                            JMP(NOTEQUALS, 0x05), //  jne short 5
-                            MOV(EAX, 5), //  mov eax,05
-                            CMP(EAX, 0x37), //  cmp eax,37
-                        },
-                    },
-                    new BinaryEdit("u_fireballistamonk")
-                    {
-                        new BinBytes(0x00)
-                    }
-                }
-            },
-
-            /*
-             * DISABLE DEMOLISHING OF INACCESSIBLE BUILDINGS
-             */
-
-            // 004242C3
-            BinBytes.Change("ai_access", ChangeType.Bugfix, true, 0xEB),
             
             /*
              * REMANNING WALL DEFENSES
@@ -391,14 +355,6 @@ namespace UCP
                 }
             },
 
-
-            /*
-             *  OX TETHER SPAM
-             */
-             
-            // 004EFF9A => jne to jmp
-            BinBytes.Change("ai_tethers", ChangeType.Bugfix, true, 0x90, 0xE9),
-
             /*
              *  IMPROVE WOOD BUYING
              */ 
@@ -419,13 +375,6 @@ namespace UCP
                     }
                 }
             },
-
-            /*
-             * UNLIMITED SIEGE ENGINES ON TOWERS
-             */
-             
-            // 004D20A2
-            BinBytes.Change("ai_towerengines", ChangeType.Bugfix, true, 0xEB),
             
             /*
              *  NO ASSAULT SWITCHES
@@ -505,20 +454,6 @@ namespace UCP
                             0x0F, 0x84, new BinRefTo("dem"),
                         },
                         new BinLabel("dem"),
-                    }
-
-                }
-            },
-            
-            // AI Fix laddermen with enclosed keep
-            new Change("ai_fix_laddermen_with_enclosed_keep", ChangeType.Bugfix, true)
-            {
-                new DefaultHeader("ai_fix_laddermen_with_enclosed_keep")
-                {
-
-                    new BinaryEdit("ai_fix_laddermen_with_enclosed_keep") // 5774A
-                    {
-                        new BinBytes(0x6A, 0x01),
                     }
 
                 }
@@ -1226,23 +1161,6 @@ namespace UCP
                         new BinSkip(8),
                         new BinInt16Value()
                     },
-                }
-            },
-
-
-            /*
-             * EXTREME
-             */
-
-            new Change("o_xtreme", ChangeType.Other, false)
-            {
-                new DefaultHeader("o_xtreme")
-                {
-                    // 0057CAC5 disable manabar rendering
-                    BinNops.CreateEdit("o_xtreme_bar1", 10),
-                    
-                    // 4DA3E0 disable manabar clicks
-                    BinBytes.CreateEdit("o_xtreme_bar2", 0xC3),
                 }
             },
 
