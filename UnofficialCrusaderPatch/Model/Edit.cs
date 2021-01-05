@@ -22,7 +22,7 @@ namespace UCP
         string _codeBlockName;
 
         protected InlineValueRetriever Value;
-        protected int[] Parameters { get; }
+        public int[] Parameters { get; }
         public string CodeBlockName { get => _codeBlockName; }
         public CodeReplacement(string codeBlockName, int[] parameters)
         {
@@ -49,7 +49,7 @@ namespace UCP
     internal class CodeAllocation : AbstractChange, IChange
     {
         protected AllocatedValueRetriever Value;
-        protected int[] Parameters { get; }
+        public int[] Parameters { get; }
         public CodeAllocation(int[] parameters)
         {
             this.Parameters = parameters;
@@ -72,7 +72,7 @@ namespace UCP
     internal class MemoryAllocation : AbstractChange, IChange
     {
         protected AllocatedValueRetriever Value;
-        protected int[] Parameters { get; }
+        public int[] Parameters { get; }
         public MemoryAllocation(int[] parameters)
         {
             this.Parameters = parameters;

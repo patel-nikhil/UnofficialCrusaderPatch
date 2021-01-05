@@ -354,27 +354,6 @@ namespace UCP
                     }
                 }
             },
-
-            /*
-             *  IMPROVE WOOD BUYING
-             */ 
-
-            // 00457DF4
-            new Change("ai_buywood", ChangeType.Bugfix, true)
-            {
-                new DefaultHeader("ai_buywood")
-                {
-                    new BinaryEdit("ai_buywood")
-                    {
-                        new BinAddress("offset", 2),
-                        new BinHook(6)
-                        {
-                            ADD(EBX, 0x02), // add ebx, 2
-                            0x3B, 0x9E, new BinRefTo("offset", false), // ori code, cmp ebx, [esi+offset]
-                        }
-                    }
-                }
-            },
             
             /*
              *  NO ASSAULT SWITCHES
@@ -544,24 +523,6 @@ namespace UCP
                     }
                 }
             },
-
-            new Change("u_fix_applefarm_blocking", ChangeType.Bugfix, true)
-            {
-                new DefaultHeader("u_fix_applefarm_blocking")
-                {
-
-                    new BinaryEdit("u_fix_applefarm_blocking") // 4F36B2
-                    {
-                        new BinSkip(11),
-                        new BinHook(5)
-                        {
-                            0x81, 0x47, 0x14, 0x02, 0x00, 0x00, 0x00, // add [edi+14],00000002
-                            0x81, 0x47, 0x18, 0x02, 0x00, 0x00, 0x00, // add [edi+18],00000002
-                            0x5F, // pop edi
-                        }
-                    }
-                 }
-            },
           
             // Fix tanner going back to her hut without cow
             // Block starts: 559C49
@@ -607,22 +568,6 @@ namespace UCP
                 }
             },
           
-            /*
-             * Fletcher bugfix 
-             */
-            new Change("o_fix_fletcher_bug", ChangeType.Bugfix)
-            {
-                new DefaultHeader("o_fix_fletcher_bug")
-                {
-                    new BinaryEdit("o_fix_fletcher_bug")
-                    {
-                        new BinSkip(0x1E), // skip 30 bytes
-                        new BinBytes(0x01) // set state to 1 instead of 3
-
-                    }
-                }
-            },
-          
             // Fix AI crusader archers not lighting pitch
             new Change("ai_fix_crusader_archers_pitch", ChangeType.Bugfix, true)
             {
@@ -657,19 +602,6 @@ namespace UCP
                 }
             },
           
-            // Fix baker disappear bug
-            new Change("o_fix_baker_disappear", ChangeType.Bugfix, true)
-            {
-                new DefaultHeader("o_fix_baker_disappear")
-                {
-                    new BinaryEdit("o_fix_baker_disappear") // 5774A
-                    {
-                        new BinSkip(19),
-                        new BinNops(9)
-                    }
-                }
-            },
-          
             // Fix moat digging unit disappearing
             new Change("o_fix_moat_digging_unit_disappearing", ChangeType.Bugfix, true)
             {
@@ -700,26 +632,6 @@ namespace UCP
                 new SliderHeader("build_housing", false, 0, 500, 1, 12, 30){},
 
                 new SliderHeader("delete_housing", false, 0, 500, 1, 20, 0x7F){},
-            },
-
-
-            /*
-             *  AI RECRUIT ADDITIONAL ATTACK TROOPS 
-             */
-
-            // 115EEE0 + (AI1 = 73E8) = stay home troops?
-            // +8 attack troops
-            
-            // absolute limit at 0x4CDEF8 + 1 = 200
-            new Change("ai_attacklimit", ChangeType.AILords)
-            {
-                new SliderHeader("ai_attacklimit", true, 0, 3000, 50, 200, 500)
-                {
-                    new BinaryEdit("ai_attacklimit")
-                    {
-                        new BinInt32Value()
-                    },
-                }
             },
 
 
@@ -809,42 +721,6 @@ namespace UCP
                 {
                     BinBytes.CreateEdit("ai_attacktarget", 0xEB, 0x52, 0x90)
                 },
-            },
-
-            /*
-             * AI NO SLEEP
-             */
-
-            // 004CBCD5
-            new Change("ai_nosleep", ChangeType.AILords, false)
-            {
-                new DefaultHeader("ai_nosleep")
-                {
-                    new BinaryEdit("ai_nosleep")
-                    {
-                        new BinBytes(0x30, 0xD2, 0x90), // xor dl, dl
-                        new BinSkip(2),
-                        new BinBytes(0x30, 0xC9, 0x90), // xor cl, cl
-                        new BinSkip(10),
-                        new BinBytes(0x30, 0xD2, 0x90), // xor dl, dl
-                        new BinSkip(8),
-                        new BinBytes(0x30, 0xC9, 0x90), // xor cl, cl
-                        new BinSkip(8),
-                        new BinBytes(0x30, 0xD2, 0x90), // xor dl, dl
-                        new BinSkip(10),
-                        new BinBytes(0x30, 0xC9, 0x90), // xor cl, cl
-                        new BinSkip(10),
-                        new BinBytes(0x30, 0xD2, 0x90), // xor dl, dl
-                        new BinSkip(10),
-                        new BinBytes(0x30, 0xC9, 0x90), // xor cl, cl
-                        new BinSkip(10),
-                        new BinBytes(0x30, 0xD2, 0x90), // xor dl, dl
-                        new BinSkip(10),
-                        new BinBytes(0x30, 0xC9, 0x90), // xor cl, cl
-                        new BinSkip(10),
-                        new BinBytes(0x30, 0xD2, 0x90), // xor dl, dl
-                    }
-                }
             },
 
             /*
@@ -948,38 +824,6 @@ namespace UCP
                 },
             },
 
-            /*
-             * AI RECRUIT INTERVALS
-             */
-
-            // AI_OFFSET = AI_INDEX * 169
-
-            // recruit interval: 023FC8E8 + AI_OFFSET * 4 + 164
-
-            // start of game offsets?
-            // rat offset: 0xA9  => 1, 1, 1
-            // snake offset: 0x152 => 1, 0, 1
-            // pig offset: 0x1FB => 1, 1, 4
-            // wolf offset: 0x2A4 => 4, 1, 4
-            // saladin offset: 0x34D => 1, 1, 1
-            // kalif offset: 0x3F6 => 0, 1, 0
-            // sultan offset: 0x49F  => 8, 8, 4
-            // richard offset: 0x548  => 1, 1, 1
-            // frederick offset: 0x5F1  => 4, 1, 4
-            // philipp offset: 0x69A  => 4, 4, 4
-            // wazir offset: 0x743  => 1, 1, 1
-            // emir offset: 0x7EC  => 0, 1, 0
-            // nizar offset: 0x895  => 4, 8, 1
-            // sheriff offset: 0x93E  => 4, 1, 4
-            // marshal offset: 0x9E7  => 1, 1, 4
-            // abbot offset: 0xA90  => 1, 1, 1
-
-            // +4, normal2
-            // +8, turned up?
-
-            // sets the recruitment interval to 1 for all AIs
-            // 004D3B41 mov eax, 1
-            BinBytes.Change("ai_recruitinterval", ChangeType.AILords, false, 0xB8, 0x01, 0, 0, 0, 0x90, 0x90),
 
             // disable sleeping phase for AI recruitment during attacks
             // this is no good, because the AI sends newly recruited troops instantly forth
@@ -1013,53 +857,6 @@ namespace UCP
             #endregion
 
             #region UNITS
-            
-            //BinInt32.Change("laddermadness", ChangeType.Troops, 1),
-
-            
-            // Armbrust dmg table: 0xB4ED20
-            // Bogen dmg table: 0xB4EAA0
-            // Sling dmg table: 0xB4EBE0
-
-            // Schutz von Leiternträgern gegen Fernkämpfer
-            new Change("u_laddermen", ChangeType.Troops)
-            {
-                new DefaultHeader("u_laddermen")
-                {
-                    BinInt32.CreateEdit("u_ladderarmor_bow", 420), // B4EAA0 + 4 * 1D   (vanilla = 1000)
-                    BinInt32.CreateEdit("u_ladderarmor_sling", 1000), // B4EBE0 + 4 * 1D   (vanilla = 2500)
-                    BinInt32.CreateEdit("u_ladderarmor_xbow", 1000), // B4ED20 + 4 * 1D   (vanilla = 2500)
-
-                    // 0052EC37 + 2
-                    BinBytes.CreateEdit("u_laddergold", 0xF7), // 1D - 9 = 14h            (vanilla: 1D - 19 = 4)
-                    
-                    new BinaryEdit("ui_fix_laddermen_cost_display_in_engineers_guild") // F5C91
-                    {
-                        new BinBytes(0xBB, 0x14),
-                    }
-                }
-            },         
-            
-            // Armbrustschaden gegen Arab. Schwertkämpfer, original: 8000
-            // 0xB4EE4C = 0x4B*4 + 0xB4ED20
-            BinInt32.Change("u_arabxbow", ChangeType.Troops, 3500),
-            
-            // Arab. Schwertkämpfer Angriffsanimation, ca. halbiert
-            // 0xB59CD0
-            BinBytes.Change("u_arabwall", ChangeType.Troops, true,
-                0x01, 0x02, 0x03, 0x04, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E,
-                0x10, 0x11, 0x12, 0x13, 0x14, 0x16, 0x17, 0x18, 0x19, 0x1A, 0x1B, 0x00),
-            
-
-            // Lanzenträger hp: 10000
-            new Change("u_spearmen", ChangeType.Troops)
-            {
-                new DefaultHeader("u_spearmen")
-                {
-                    BinInt32.CreateEdit("u_spearbow", 2000), // B4EAA0 + 4 * 18   (vanilla = 3500)
-                    BinInt32.CreateEdit("u_spearxbow", 9999), // B4EBE0 + 4 * 18   (vanilla = 15000)
-                }
-            },
 
             // ladderman: 0xB55AF4 = soldier bool
             
@@ -1146,23 +943,6 @@ namespace UCP
             #endregion
 
             #region OTHER
-
-            /*
-             *  FIRE COOLDOWN
-             */
-
-            // 0x00410A30 + 8 ushort default = 2000
-            new Change("o_firecooldown", ChangeType.Other)
-            {
-                new SliderHeader("o_firecooldown", true, 0, 20000, 500, 2000, 6000)
-                {
-                    new BinaryEdit("o_firecooldown")
-                    {
-                        new BinSkip(8),
-                        new BinInt16Value()
-                    },
-                }
-            },
 
 
             /*
@@ -2733,46 +2513,6 @@ namespace UCP
             },
 
 
-
-
-
-
-            /* 
-             *  FREE TRADER POST
-             */
-             
-            // trader post: runtime 01124EFC
-            // 005C23D8
-            BinBytes.Change("o_freetrader", ChangeType.Other, true, 0x00),
-
-
-            /*
-             * SIEGE EQUIPMENT BUILDING
-             */
-
-            // 0044612B
-            // nop out: mov [selection], ebp = 0
-            BinBytes.Change("o_engineertent", ChangeType.Other, true, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90),
-
-            /*
-             *  MOAT VISIBILITY
-             */
-             
-            new Change("o_moatvisibility", ChangeType.Other)
-            {
-                new DefaultHeader("o_moatvisibility")
-                {
-                    // 4EC86C
-                    new BinaryEdit("o_moatvisibility")
-                    {
-                        new BinSkip(0x24),
-                        new BinBytes(0x15) // mov [ ], edx = 1 instead of ebp = 0
-                    }
-                }
-            },
-            
-
-
             /*
              *  EXTENDED GAME SPEED 
              */ 
@@ -2825,27 +2565,6 @@ namespace UCP
                     }
                 }
             },
-
-
-
-            /*
-             * GATES
-             */ 
-
-            new Change("o_responsivegates", ChangeType.Other)
-            {
-                new DefaultHeader("o_responsivegates")
-                {
-                    // Gates closing distance to enemy = 200
-                    // 0x422ACC + 2
-                    BinInt32.CreateEdit("o_gatedistance", 140),
-
-                    // Gates closing time after enemy leaves = 1200
-                    // 0x422B35 + 7 (ushort)
-                    BinShort.CreateEdit("o_gatetime", 100),
-                }
-            },
-
 
 
             /*
@@ -2954,19 +2673,6 @@ namespace UCP
                 }
             },
 
-            new Change("o_increase_path_update_tick_rate", ChangeType.Other, false)
-            {
-                new DefaultHeader("o_increase_path_update_tick_rate")
-                {
-                    // 499605
-                    new BinaryEdit("o_increase_path_update_tick_rate")
-                    {
-                        new BinSkip(25),
-                        new BinBytes(0x32)
-                    },
-                },
-            },
-
             new Change("o_default_multiplayer_speed", ChangeType.Other)
             {
                 new SliderHeader("o_default_multiplayer_speed", false, 20, 90, 1, 40, 40)
@@ -3072,18 +2778,6 @@ namespace UCP
                     }
             },
             
-            // 4FA620
-            new Change("fix_apple_orchard_build_size", ChangeType.Other)
-            {
-                new DefaultHeader("fix_apple_orchard_build_size")
-                {
-                    new BinaryEdit("fix_apple_orchard_build_size")
-                    {
-                        new BinSkip(16),
-                        0x0A // this is not the size, it is the ID in the switch case!
-                    }
-                }
-            },
 
             new Change("o_allow_overbuilding", ChangeType.Other, false)
             {
